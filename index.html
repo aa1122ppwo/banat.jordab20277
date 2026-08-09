@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بنات الاردن بزنس كاش</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, setDoc, getDocs, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyD1jTqkiQvTX1YfVyiA6bH1t9VfHevhKow",
+          authDomain: "banatjo2828.firebaseapp.com",
+          projectId: "banatjo2828",
+          storageBucket: "banatjo2828.firebasestorage.app",
+          messagingSenderId: "1051130291618",
+          appId: "1:1051130291618:web:537fcea9a403bc02d7befb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.onSnapshot = onSnapshot;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.setDoc = setDoc;
+        window.getDocs = getDocs;
+        window.arrayUnion = arrayUnion;
+        window.increment = increment;
+    </script>
+
+    <style>
+        :root { 
+            --bg: #0b0f19; 
+            --card: #131d31; 
+            --border: #21324d; 
+            --primary: #4f46e5; 
+            --accent: #f97316; 
+            --text: #f8fafc; 
+            --muted: #94a3b8; 
+            --success: #10b981;
+            --verified: #3b82f6;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); margin: 0; padding: 16px; color: var(--text); min-height: 100vh; }
+        .container { max-width: 480px; margin: 0 auto; padding-bottom: 50px; }
+
+        header { text-align: center; padding: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; }
+        header h1 { margin: 0; font-size: 16px; font-weight: 700; color: #fff; }
+
+        /* شريط رسالة الإدارة المتحرك أو الثابت بأعلى الموقع */
+        #announcementBanner {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(249, 115, 22, 0.1));
+            border: 1px solid rgba(79, 70, 229, 0.4);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            color: #f8fafc;
+            text-align: center;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .action-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            color: white;
+            font-weight: 700;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: border-color 0.2s, transform 0.1s;
+        }
+        .action-box:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .action-box.add { border-color: rgba(249, 115, 22, 0.4); background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), var(--card)); }
+        .action-box.msg { border-color: rgba(59, 130, 246, 0.4); background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--card)); }
+
+        .visitor-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .visitor-box strong { color: var(--success); }
+
+        .notif-btn { background: rgba(79, 70, 229, 0.15); color: #818cf8; border: 1px solid rgba(79, 70, 229, 0.3); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; }
+        .notif-btn.active { background: var(--success); color: white; border-color: var(--success); }
+
+        .card-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; display: none; }
+        .card-box h3 { margin-top: 0; font-size: 13px; color: #fff; margin-bottom: 10px; }
+
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: white; font-size: 12px; outline: none; }
+        
+        .btn { width: 100%; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700; background: var(--primary); color: white; font-size: 12px; }
+        .btn-back { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); padding: 5px 10px; border-radius: 6px; font-size: 10px; margin-bottom: 10px; cursor: pointer; }
+
+        .posts-list { display: flex; flex-direction: column; gap: 8px; }
+        .post-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; align-items: center; cursor: pointer; transition: border-color 0.2s; }
+        .post-card:hover { border-color: var(--primary); }
+        .post-img { width: 80px; height: 80px; object-fit: cover; background: #000; flex-shrink: 0; }
+        .post-info { padding: 10px; flex-grow: 1; overflow: hidden; }
+        .post-desc { font-size: 12px; color: #f8fafc; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .post-meta { font-size: 10px; color: var(--muted); display: flex; gap: 12px; }
+
+        footer { text-align: center; margin-top: 24px; font-size: 10px; color: var(--muted); }
+        .admin-trigger { opacity: 0.1; cursor: pointer; margin-top: 4px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 id="siteTitleDisplay">بنات الاردن بزنس كاش</h1>
+    </header>
+
+    <!-- شريط رسالة الإدارة بأول الموقع -->
+    <div id="announcementBanner"></div>
+
+    <div id="mainActions" class="actions-grid">
+        <div class="action-box add" onclick="openAddView()">
+            <span style="font-size: 14px;">➕</span>
+            <span>أضف إعلانك</span>
+        </div>
+        <div class="action-box msg" onclick="openAdminMsgView()">
+            <span style="font-size: 14px;">💬</span>
+            <span>مراسلة الإدارة</span>
+        </div>
+    </div>
+
+    <div class="visitor-box">
+        <span>👁️ عدد الزوار: <strong id="visitorCount">0</strong></span>
+        <button id="bellBtn" class="notif-btn" onclick="toggleNotif()">🔔 الإشعارات</button>
+    </div>
+
+    <!-- نافذة مراسلة الإدارة -->
+    <div id="adminMsgView" class="card-box">
+        <button class="btn-back" onclick="goBack()">← عودة</button>
+        <h3>مراسلة الإدارة</h3>
+        <div class="form-group"><label>الاسم</label><input type="text" id="msgSenderName" placeholder="اسمك..."></div>
+        <div class="form-group"><label>رقم الهاتف للتواصل</label><input type="tel" id="msgSenderPhone" placeholder="رقم الهاتف..."></div>
+        <div class="form-group"><label>نص الرسالة</label><textarea id="msgContent" placeholder="اكتب رسالتك..." style="height: 80px;"></textarea></div>
+        <button class="btn" onclick="submitAdminMessage()">إرسال الرسالة</button>
+    </div>
+
+    <!-- نافذة إضافة إعلان -->
+    <div id="addView" class="card-box">
+        <button class="btn-back" onclick="goBack()">← عودة</button>
+        <h3>إضافة إعلان جديد</h3>
+        <div class="form-group"><label>الوصف</label><textarea id="uDesc" placeholder="اكتب تفاصيل إعلانك هنا..." style="height: 100px;"></textarea></div>
+        <div class="form-group"><label>الصورة (اختياري)</label><input type="file" id="uImage" accept="image/*"></div>
+        <button class="btn" onclick="submitPost()">إرسال للإدارة للنشر</button>
+    </div>
+
+    <!-- لوحة المشرف -->
+    <div id="adminPanel" class="card-box">
+        <h3>لوحة التحكم والإدارة</h3>
+        
+        <!-- التحكم برسالة الموقع -->
+        <div style="background:var(--bg); padding:10px; border-radius:10px; margin-bottom:12px; border:1px solid var(--border);">
+            <div style="font-size:11px; font-weight:700; margin-bottom:6px; color:var(--primary);">تعديل رسالة التنبيه بأول الموقع:</div>
+            <textarea id="adminAnnouncementInput" placeholder="اكتب الرسالة التي تظهر أعلى الموقع..." style="width:100%; padding:8px; background:var(--card); border:1px solid var(--border); border-radius:8px; color:white; font-size:11px; height:60px; margin-bottom:6px;"></textarea>
+            <button class="btn" style="padding:6px; font-size:11px;" onclick="saveAnnouncement()">حفظ ونشر التنبيه</button>
+        </div>
+
+        <button class="btn" style="background: var(--danger); margin-bottom: 12px;" onclick="deleteAllPosts()">🗑️ حذف جميع المنشورات المنشورة</button>
+        
+        <!-- طلبات المنشورات المعلقة -->
+        <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--accent);">طلبات المنشورات (بانتظار الموافقة):</div>
+        <div id="adminPendingPostsList" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-bottom: 14px;"></div>
+
+        <!-- طلبات الرسائل -->
+        <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--verified);">طلبات الرسائل الواردة:</div>
+        <div id="adminInboxList" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;"></div>
+    </div>
+
+    <div id="postsList" class="posts-list"></div>
+    <div id="detailView" class="card-box"></div>
+
+    <footer>
+        تم التصميم بواسطه GO© 2026<br>
+        <span class="admin-trigger" onclick="loginAdmin()">تسجيل دخول المشرف</span>
+    </footer>
+</div>
+
+<script>
+    let posts = [];
+    let isAdmin = false;
+    let notifOn = false;
+
+    window.addEventListener('popstate', () => {
+        document.getElementById('addView').style.display = 'none';
+        document.getElementById('adminMsgView').style.display = 'none';
+        document.getElementById('detailView').style.display = 'none';
+        document.getElementById('postsList').style.display = 'flex';
+        document.getElementById('mainActions').style.display = 'grid';
+    });
+
+    function openAddView() { 
+        history.pushState({ view: 'add' }, '', ''); 
+        document.getElementById('addView').style.display = 'block'; 
+        document.getElementById('postsList').style.display = 'none'; 
+        document.getElementById('mainActions').style.display = 'none'; 
+    }
+    
+    function openAdminMsgView() { 
+        history.pushState({ view: 'adminMsg' }, '', ''); 
+        document.getElementById('adminMsgView').style.display = 'block'; 
+        document.getElementById('postsList').style.display = 'none'; 
+        document.getElementById('mainActions').style.display = 'none'; 
+        let savedName = localStorage.getItem('user_display_name') || '';
+        let savedPhone = localStorage.getItem('user_display_phone') || '';
+        if(savedName) document.getElementById('msgSenderName').value = savedName;
+        if(savedPhone) document.getElementById('msgSenderPhone').value = savedPhone;
+    }
+
+    function goBack() { 
+        history.back(); 
+    }
+
+    function toggleNotif() {
+        if (!("Notification" in window)) { alert("المتصفح لا يدعم الإشعارات"); return; }
+        if (Notification.permission === "granted") {
+            notifOn = !notifOn;
+            updateBell();
+        } else {
+            Notification.requestPermission().then(p => { if (p === "granted") { notifOn = true; updateBell(); } });
+        }
+    }
+
+    function updateBell() {
+        const btn = document.getElementById('bellBtn');
+        if (notifOn) { btn.classList.add('active'); btn.innerText = "🔔 مفعلة"; }
+        else { btn.classList.remove('active'); btn.innerText = "🔔 الإشعارات"; }
+    }
+
+    async function submitAdminMessage() {
+        let name = document.getElementById('msgSenderName').value.trim();
+        let phone = document.getElementById('msgSenderPhone').value.trim();
+        let content = document.getElementById('msgContent').value.trim();
+        if(!name || !phone || !content) { alert("يرجى إكمال جميع الحقول (الاسم، رقم الهاتف، والرسالة)"); return; }
+        
+        localStorage.setItem('user_display_name', name);
+        localStorage.setItem('user_display_phone', phone);
+        
+        try {
+            await window.addDoc(window.collection(window.db, "admin_messages"), {
+                name, phone, content, time: new Date().toLocaleString(), timestamp: Date.now()
+            });
+            alert("تم إرسال رسالتك إلى الإدارة بنجاح!");
+            document.getElementById('msgContent').value = '';
+            history.back();
+        } catch(e) { alert("حدث خطأ أثناء الإرسال"); }
+    }
+
+    async function submitPost() {
+        let desc = document.getElementById('uDesc').value.trim();
+        let file = document.getElementById('uImage').files[0];
+        
+        if (!desc) { alert("يرجى كتابة وصف الإعلان"); return; }
+        let title = desc.length > 30 ? desc.substring(0, 30) + "..." : desc;
+
+        async function sendToDb(imageData) {
+            try {
+                await window.addDoc(window.collection(window.db, "posts"), {
+                    title, desc, image: imageData || '',
+                    approved: false, time: Date.now(), comments: [], likes: 0, views: 0
+                });
+                alert("تم إرسال إعلانك بنجاح، بانتظار موافقة الإدارة لنشره");
+                document.getElementById('uDesc').value = '';
+                document.getElementById('uImage').value = '';
+                history.back();
+            } catch(e) { alert("حدث خطأ"); }
+        }
+
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = async function(e) { await sendToDb(e.target.result); };
+            reader.readAsDataURL(file);
+        } else {
+            await sendToDb(null);
+        }
+    }
+
+    function renderPosts() {
+        let list = document.getElementById('postsList');
+        list.innerHTML = '';
+        let approvedPosts = posts.filter(p => p.approved === true);
+        
+        if(approvedPosts.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:var(--muted); font-size:12px; padding:20px;">لا توجد إعلانات منشورة حالياً</div>';
+            return;
+        }
+
+        approvedPosts.forEach(p => {
+            let imgHtml = p.image ? `<img src="${p.image}" class="post-img">` : '';
+            
+            list.innerHTML += `
+                <div class="post-card" onclick="clickPost('${p.id}')">
+                    ${imgHtml}
+                    <div class="post-info">
+                        <div class="post-desc">${p.desc || ''}</div>
+                        <div class="post-meta">
+                            <span>👁️ ${p.views || 0}</span>
+                            <span>❤️ ${p.likes || 0}</span>
+                            <span>💬 ${(p.comments || []).length}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    async function clickPost(id) {
+        let p = posts.find(item => item.id === id);
+        if(!p) return;
+        
+        await window.updateDoc(window.doc(window.db, "posts", id), {
+            views: window.increment(1)
+        });
+
+        history.pushState({ view: 'detail', id: id }, '', '');
+        document.getElementById('postsList').style.display = 'none';
+        document.getElementById('mainActions').style.display = 'none';
+        let dv = document.getElementById('detailView');
+        dv.style.display = 'block';
+        
+        let savedName = localStorage.getItem('user_display_name') || '';
+        let imgHtml = p.image ? `<img src="${p.image}" style="width:100%; max-height:220px; object-fit:contain; border-radius:10px; background:#000; margin-bottom:10px;">` : '';
+
+        let comms = (p.comments || []).map((c, index) => {
+            let badge = c.role === 'admin' ? `<span style="color:var(--verified); margin-right:4px;">✔ الإدارة</span>` : '';
+            let deleteCommentBtn = isAdmin ? `<button onclick="deleteComment('${p.id}', ${index})" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:10px; margin-right:8px; font-weight:700;">حذف</button>` : '';
+            return `<div style="background:var(--bg); padding:8px 10px; border-radius:8px; margin-bottom:6px; font-size:11px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div><b>${c.name}</b> ${badge}</div>
+                            <div style="display:flex; align-items:center;">
+                                <span style="font-size:9px; color:var(--muted);">${c.time || ''}</span>
+                                ${deleteCommentBtn}
+                            </div>
+                        </div>
+                        <div style="margin-top:3px; color:#f8fafc;">${c.text}</div>
+                    </div>`;
+        }).join('') || '<div style="font-size:11px; color:var(--muted)">لا توجد تعليقات بعد</div>';
+
+        dv.innerHTML = `
+            <button class="btn-back" onclick="goBack()">← عودة</button>
+            ${imgHtml}
+            <p style="font-size:13px; color:#f8fafc; line-height:1.4; margin-bottom:12px; white-space: pre-wrap;">${p.desc || ''}</p>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:11px; color:var(--muted); background:var(--bg); padding:8px 12px; border-radius:10px;">
+                <span>👁️ المشاهدات: <b>${p.views || 0}</b></span>
+                <button onclick="likePost('${p.id}')" style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); padding:4px 10px; border-radius:8px; cursor:pointer; font-weight:700;">❤️ إعجاب (${p.likes || 0})</button>
+            </div>
+
+            <div style="border-top:1px solid var(--border); padding-top:10px; margin-top:10px;">
+                <div style="font-size:12px; font-weight:700; margin-bottom:6px;">التعليقات والمناقشة</div>
+                <div style="max-height:180px; overflow-y:auto; margin-bottom:8px;">${comms}</div>
+                <div class="form-group" style="margin-bottom:6px;"><input type="text" id="cName" value="${savedName}" placeholder="الاسم"></div>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" id="cText" placeholder="اكتب ردك..." style="flex-grow:1;">
+                    <button class="btn" style="width:auto; padding:8px 12px; font-size:11px;" onclick="addComment('${p.id}')">إرسال</button>
+                </div>
+            </div>
+            ${isAdmin ? `<button class="btn" style="background:var(--danger); margin-top:14px; padding:8px; font-size:11px;" onclick="delPost('${p.id}')">حذف الإعلان</button>` : ''}
+        `;
+    }
+
+    async function likePost(id) {
+        await window.updateDoc(window.doc(window.db, "posts", id), {
+            likes: window.increment(1)
+        });
+    }
+
+    async function addComment(id) {
+        let name = document.getElementById('cName').value.trim();
+        let text = document.getElementById('cText').value.trim();
+        let role = isAdmin ? 'admin' : 'user';
+        if(isAdmin) name = "الإدارة";
+
+        if(!text || (!isAdmin && !name)) { alert("أدخل الاسم والتعليق"); return; }
+        if(name && !isAdmin) localStorage.setItem('user_display_name', name);
+
+        await window.updateDoc(window.doc(window.db, "posts", id), {
+            comments: window.arrayUnion({ name, text, role, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) })
+        });
+        document.getElementById('cText').value = '';
+    }
+
+    async function deleteComment(postId, commentIndex) {
+        if(!confirm("هل تريد حذف هذا التعليق؟")) return;
+        let p = posts.find(item => item.id === postId);
+        if(!p || !p.comments) return;
+
+        let updatedComments = [...p.comments];
+        updatedComments.splice(commentIndex, 1);
+
+        await window.updateDoc(window.doc(window.db, "posts", postId), {
+            comments: updatedComments
+        });
+        setTimeout(() => clickPost(postId), 150);
+    }
+
+    async function loginAdmin() {
+        let pass = prompt("كلمة مرور المشرف:");
+        if (pass === "@oday1996oday@") {
+            isAdmin = true;
+            document.getElementById('adminPanel').style.display = 'block';
+            loadAdminData();
+            alert("تم تسجيل دخول المشرف بنجاح");
+        }
+    }
+
+    function loadAdminData() {
+        // تحميل الرسائل الواردة
+        window.onSnapshot(window.collection(window.db, "admin_messages"), snap => {
+            let inboxList = document.getElementById('adminInboxList');
+            inboxList.innerHTML = '';
+            if(snap.empty) {
+                inboxList.innerHTML = '<div style="font-size:10px; color:var(--muted);">لا توجد رسائل جديدة</div>';
+                return;
+            }
+            snap.forEach(d => {
+                let msg = d.data();
+                inboxList.innerHTML += `
+                    <div style="background:var(--bg); padding:8px; border-radius:8px; font-size:11px; border:1px solid var(--border);">
+                        <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:3px;">
+                            <span>${msg.name}</span>
+                            <span style="color:var(--success); direction: ltr; text-align: right;"><a href="tel:${msg.phone}" style="color:var(--success); text-decoration:none;">📞 ${msg.phone}</a></span>
+                        </div>
+                        <div style="color:#f8fafc; margin-bottom:4px;">${msg.content}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:9px; color:var(--muted);">${msg.time || ''}</span>
+                            <button onclick="deleteAdminMsg('${d.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:10px; font-weight:700;">حذف الرسالة</button>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // تحميل طلبات المنشورات المعلقة
+        let pendingList = document.getElementById('adminPendingPostsList');
+        pendingList.innerHTML = '';
+        let pendingPosts = posts.filter(p => p.approved === false || !p.approved);
+        if(pendingPosts.length === 0) {
+            pendingList.innerHTML = '<div style="font-size:10px; color:var(--muted);">لا توجد طلبات إعلانات معلقة</div>';
+        } else {
+            pendingPosts.forEach(p => {
+                let imgThumb = p.image ? `<img src="${p.image}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;">` : '';
+                pendingList.innerHTML += `
+                    <div style="background:var(--bg); padding:8px; border-radius:8px; font-size:11px; border:1px solid var(--border); display:flex; align-items:center; gap:8px;">
+                        ${imgThumb}
+                        <div style="flex-grow:1; overflow:hidden;">
+                            <div style="color:#f8fafc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.desc}</div>
+                        </div>
+                        <div style="display:flex; gap:4px; flex-shrink:0;">
+                            <button onclick="approvePost('${p.id}')" style="background:var(--success); color:white; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:10px; font-weight:700;">موافقة</button>
+                            <button onclick="rejectPost('${p.id}')" style="background:var(--danger); color:white; border:none; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:10px; font-weight:700;">رفض</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    async function approvePost(id) {
+        await window.updateDoc(window.doc(window.db, "posts", id), { approved: true });
+        loadAdminData();
+    }
+
+    async function rejectPost(id) {
+        if(confirm("هل تريد رفض وحذف هذا الإعلان؟")) {
+            await window.deleteDoc(window.doc(window.db, "posts", id));
+            loadAdminData();
+        }
+    }
+
+    async function saveAnnouncement() {
+        let text = document.getElementById('adminAnnouncementInput').value.trim();
+        try {
+            await window.setDoc(window.doc(window.db, "settings", "announcement"), { text });
+            alert("تم حفظ ونشر رسالة التنبيه بنجاح!");
+        } catch(e) {
+            alert("حدث خطأ أثناء الحفظ");
+        }
+    }
+
+    async function deleteAdminMsg(msgId) {
+        if(confirm("حذف هذه الرسالة؟")) {
+            await window.deleteDoc(window.doc(window.db, "admin_messages", msgId));
+        }
+    }
+
+    async function deleteAllPosts() {
+        if(confirm("حذف كل المنشورات المنشورة؟")) {
+            let snaps = await window.getDocs(window.collection(window.db, "posts"));
+            snaps.forEach(d => {
+                if(d.data().approved === true) window.deleteDoc(d.ref);
+            });
+        }
+    }
+
+    async function delPost(id) {
+        if(confirm("حذف الإعلان؟")) {
+            await window.deleteDoc(window.doc(window.db, "posts", id));
+            history.back();
+        }
+    }
+
+    async function trackVisitor() {
+        const visitRef = window.doc(window.db, "stats", "visitors");
+        try {
+            await window.setDoc(visitRef, { count: window.increment(1) }, { merge: true });
+            window.onSnapshot(visitRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    document.getElementById('visitorCount').innerText = docSnap.data().count || 1;
+                }
+            });
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        trackVisitor();
+        
+        // مراقبة رسالة التنبيه في أعلى الموقع
+        window.onSnapshot(window.doc(window.db, "settings", "announcement"), (docSnap) => {
+            let banner = document.getElementById('announcementBanner');
+            let inputField = document.getElementById('adminAnnouncementInput');
+            if (docSnap.exists() && docSnap.data().text) {
+                let txt = docSnap.data().text;
+                banner.innerText = txt;
+                banner.style.display = 'block';
+                if(inputField) inputField.value = txt;
+            } else {
+                banner.style.display = 'none';
+                if(inputField) inputField.value = '';
+            }
+        });
+
+        // مراقبة المنشورات
+        window.onSnapshot(window.collection(window.db, "posts"), snap => {
+            posts = [];
+            snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+            renderPosts();
+            if(isAdmin) loadAdminData();
+        });
+    });
+</script>
+
+</body>
+</html>
