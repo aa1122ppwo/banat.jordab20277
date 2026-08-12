@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جو بوك - Jo Book</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --secondary-text: #64748b;
+            --border-color: #e2e8f0;
+            --radius: 16px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* التنويهات العلوية */
+        #global-announcement-banner {
+            display: none;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            padding: 10px 16px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid #fcd34d;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
+
+        #private-announcement-banner {
+            display: none;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            padding: 10px 16px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid #f87171;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .page-container {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 40px);
+            flex-direction: column;
+        }
+
+        .page-container.active {
+            display: flex;
+        }
+
+        /* صفحة الدخول والتسجيل */
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .auth-intro {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .auth-intro h1 {
+            color: var(--primary-color);
+            font-size: 2.4rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .auth-intro p {
+            font-size: 0.95rem;
+            color: var(--secondary-text);
+            line-height: 1.5;
+        }
+
+        .auth-box-container {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            direction: auto;
+        }
+
+        .form-control:focus {
+            background-color: #ffffff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-warning { background-color: var(--warning-color); color: white; }
+
+        .auth-divider {
+            border-bottom: 1px solid var(--border-color);
+            margin: 18px 0;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 14px;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .error-msg {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* هيدر الهواتف المحمولة المتجاوب */
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .logo-badge {
+            background-color: #3b82f6;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background-color: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .header-btn:hover { background-color: #1e40af; }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            max-width: 580px;
+            margin: 16px auto;
+            width: 100%;
+            padding: 0 12px;
+            flex: 1;
+        }
+
+        /* كارت إنشاء المنشور */
+        .create-post-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .create-post-card textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 6px;
+            background: transparent;
+            direction: auto;
+            color: var(--text-color);
+            min-height: 80px;
+        }
+
+        .create-post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 6px;
+        }
+
+        .media-upload-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .media-upload-btn:hover { background-color: #eff6ff; }
+
+        /* كارت المنشور */
+        .post-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .post-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .post-user-info:hover { opacity: 0.85; }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: #e0f2fe;
+            color: #0284c7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            overflow: hidden;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .badge-verified {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            margin-right: 3px;
+        }
+
+        .post-meta-text {
+            font-size: 0.75rem;
+            color: var(--secondary-text);
+            margin-top: 2px;
+        }
+
+        .post-delete-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+        .post-delete-btn:hover { color: var(--danger-color); }
+
+        .post-body-text {
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            direction: auto;
+            word-break: break-word;
+        }
+
+        .post-image-container {
+            width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            background: #f8fafc;
+            display: none;
+        }
+        .post-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-stats-row {
+            display: flex;
+            justify-content: flex-start;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 6px;
+        }
+
+        .post-actions-row {
+            display: flex;
+            justify-content: space-around;
+            padding: 2px 0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-text);
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover { background-color: #f1f5f9; color: var(--primary-color); }
+        .action-btn.liked { color: var(--primary-color); }
+
+        .comments-section {
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .comment-item {
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            direction: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .comment-input-box {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .comment-input-box input {
+            flex: 1;
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.85rem;
+            background: #f8fafc;
+            direction: auto;
+        }
+        .comment-input-box input:focus {
+            background: #fff;
+            border-color: var(--primary-color);
+        }
+
+        /* لوحة التحكم والإدارة */
+        .admin-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 16px;
+            width: 100%;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            white-space: nowrap;
+        }
+
+        .admin-table th, .admin-table td {
+            padding: 12px 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-table th {
+            background-color: #f8fafc;
+            color: var(--secondary-text);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        .btn-sm:hover { opacity: 0.9; }
+
+        .hidden-admin-trigger {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--secondary-text);
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .hidden-admin-trigger:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .suspended-banner {
+            background-color: var(--danger-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            margin-bottom: 12px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            word-break: break-word;
+            direction: auto;
+        }
+
+        .chat-message.sent { background-color: var(--primary-color); color: white; align-self: flex-start; border-bottom-right-radius: 4px; }
+        .chat-message.received { background-color: #e2e8f0; color: var(--text-color); align-self: flex-end; border-bottom-left-radius: 4px; }
+
+        .profile-card, .member-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شريط التنويه العام -->
+    <div id="global-announcement-banner">
+        📢 <span id="announcement-text-content"></span>
+    </div>
+
+    <!-- شريط التنويه الخاص بالمستخدم -->
+    <div id="private-announcement-banner">
+        ⚠️ تنويه إداري خاص لك: <span id="private-announcement-text"></span>
+    </div>
+
+    <!-- صفحة الدخول -->
+    <div id="auth-page" class="page-container active">
+        <div class="auth-container">
+            <div class="auth-intro">
+                <h1>جو بوك</h1>
+                <p>تواصل مع الأصدقاء وشارك لحظاتك اليومية بكل سهولة واحترافية.</p>
+            </div>
+            <div class="auth-box-container">
+                <div id="login-form-box">
+                    <div id="login-error" class="error-msg"></div>
+                    <div class="form-group">
+                        <input type="text" id="login-username" class="form-control" placeholder="اسم المستخدم" lang="ar" dir="auto">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="login-password" class="form-control" placeholder="كلمة المرور">
+                    </div>
+                    <button class="btn btn-primary" onclick="handleLogin()">تسجيل الدخول</button>
+                    <div class="auth-divider"></div>
+                    <button class="btn btn-success" onclick="switchAuthMode('register')">إنشاء حساب جديد</button>
+                </div>
+
+                <div id="register-form-box" style="display: none;">
+                    <div id="register-error" class="error-msg"></div>
+                    <div class="form-group">
+                        <input type="text" id="reg-username" class="form-control" placeholder="اسم المستخدم" lang="ar" dir="auto">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="reg-password" class="form-control" placeholder="كلمة المرور">
+                    </div>
+                    <button class="btn btn-primary" onclick="handleRegister()">تسجيل</button>
+                    <div class="toggle-link" onclick="switchAuthMode('login')">العودة لتسجيل الدخول</div>
+                </div>
+
+                <div class="hidden-admin-trigger" onclick="promptAdminLogin()">
+                    🔒 دخول لوحة تحكم الإدارة
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div id="app-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="user-nav-container"></div>
+        </header>
+
+        <div id="suspension-notice" style="display:none;" class="suspended-banner">
+            حسابك موقوف أو معلق من قِبل الإدارة.
+        </div>
+
+        <div class="main-content">
+            <div class="create-post-card">
+                <textarea id="post-content-input" rows="3" placeholder="بماذا تفكر؟..." lang="ar" dir="auto"></textarea>
+                <div id="post-image-preview-container" style="display:none; margin-bottom: 10px; position:relative; max-height: 180px; border-radius: 8px; overflow:hidden;">
+                    <img id="post-image-preview" src="" alt="Preview" style="width:100%; height:100%; object-fit:cover;">
+                    <button onclick="clearPostImage()" style="position:absolute; top:6px; left:6px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:24px; height:24px; cursor:pointer; font-size: 0.8rem;">✕</button>
+                </div>
+                <div class="create-post-footer">
+                    <input type="file" id="post-media-input" accept="image/*" style="display: none;" onchange="handlePostImageSelect(event)">
+                    <button class="media-upload-btn" onclick="document.getElementById('post-media-input').click()" title="إضافة صورة">🖼️</button>
+                    <button class="btn btn-primary" style="width: auto; padding: 8px 22px; font-size: 0.9rem;" onclick="createPost()">نشر</button>
+                </div>
+            </div>
+            <div id="posts-feed"></div>
+        </div>
+    </div>
+
+    <!-- صفحة بحث الأعضاء -->
+    <div id="members-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="members-nav-container"></div>
+        </header>
+
+        <div class="main-content">
+            <div class="profile-card">
+                <h2 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--primary-color);">بحث عن الأعضاء</h2>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" id="members-search-input" class="form-control" placeholder="ابحث عن اسم عضو..." lang="ar" dir="auto" oninput="renderMembersList()">
+                </div>
+            </div>
+            <div id="members-list-container"></div>
+        </div>
+    </div>
+
+    <!-- صفحة قائمة الدردشات -->
+    <div id="chats-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="chats-nav-container"></div>
+        </header>
+
+        <div class="main-content">
+            <div class="profile-card">
+                <h2 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--primary-color);">الدردشات</h2>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="chats-search-input" class="form-control" placeholder="بحث في الأعضاء للمراسلة..." lang="ar" dir="auto" oninput="renderChatsList()">
+                </div>
+                <div id="chats-list-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة المراسلة الفردية -->
+    <div id="chat-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="chat-nav-container"></div>
+        </header>
+
+        <div class="main-content">
+            <div class="profile-card">
+                <h3 id="chat-with-title" style="margin-bottom: 12px; color: var(--primary-color); font-size: 1rem;">المحادثة</h3>
+                <div id="chat-messages-container" class="chat-box"></div>
+                <div class="comment-input-box">
+                    <input type="text" id="chat-input-text" placeholder="اكتب رسالة..." lang="ar" dir="auto" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button class="btn btn-primary" style="width: auto; padding: 8px 16px;" onclick="sendChatMessage()">إرسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة الملف الشخصي الخاصة بالمستخدم الحالي -->
+    <div id="profile-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="profile-nav-container"></div>
+        </header>
+
+        <div class="main-content">
+            <div class="profile-card">
+                <h2 style="margin-bottom: 12px; font-size: 1.1rem; color: var(--primary-color);">تعديل الملف الشخصي</h2>
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+                    <div id="profile-avatar-preview" class="avatar" style="width: 60px; height: 60px; font-size: 1.3rem;"></div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.85rem;">الصورة الشخصية</label>
+                        <input type="file" id="profile-img-input" accept="image/*" style="font-size: 0.8rem;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.85rem;">المدينة (المحافظة)</label>
+                    <select id="profile-city-select" class="form-control">
+                        <option value="عمان">عمان</option>
+                        <option value="إربد">إربد</option>
+                        <option value="الزرقاء">الزرقاء</option>
+                        <option value="السلط / البلقاء">السلط / البلقاء</option>
+                        <option value="العقبة">العقبة</option>
+                        <option value="المفرق">المفرق</option>
+                        <option value="الكرك">الكرك</option>
+                        <option value="مادبا">مادبا</option>
+                        <option value="جرش">جرش</option>
+                        <option value="عجلون">عجلون</option>
+                        <option value="معان">معان</option>
+                        <option value="الطفيلة">الطفيلة</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveProfile()">حفظ التعديلات</button>
+            </div>
+            <div class="profile-card">
+                <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--primary-color);">منشوراتي السابقة</h3>
+                <div id="profile-user-posts-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة عرض ملف شخصي لمستخدم آخر (عند الضغط على اسمه أو صورته) -->
+    <div id="user-profile-page" class="page-container">
+        <header class="app-header">
+            <div class="logo-area" onclick="loadUserApp()">
+                <div class="logo-text">Jo Book</div>
+                <div class="logo-badge">جو بوك</div>
+            </div>
+            <div class="user-nav" id="user-profile-nav-container"></div>
+        </header>
+
+        <div class="main-content">
+            <div class="profile-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div id="view-user-avatar" class="avatar" style="width: 54px; height: 54px; font-size: 1.2rem;"></div>
+                        <div>
+                            <h3 id="view-user-name" style="font-size: 1.1rem; color: var(--primary-color);"></h3>
+                            <div id="view-user-meta" style="font-size: 0.8rem; color: var(--secondary-text);"></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button id="view-user-friend-btn" class="btn-sm btn-success" onclick="toggleFriendFromProfile()">صديق</button>
+                        <button class="btn-sm btn-primary" onclick="openChat(viewedProfileUsername)">💬 مراسلة</button>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-card">
+                <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--primary-color);">منشورات المستخدم</h3>
+                <div id="view-user-posts-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- لوحة تحكم الإدارة العامة -->
+    <div id="admin-page" class="page-container">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2 style="font-size: 1.1rem;">لوحة تحكم الإدارة</h2>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            </div>
+
+            <!-- صندوق رسائل الأعضاء الموجهة للإدارة -->
+            <div class="admin-header" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <h3 style="font-size: 1rem; color: var(--primary-color);">📥 صندوق رسائل الأعضاء الواردة للإدارة</h3>
+                <div id="admin-messages-inbox-container" style="max-height: 250px; overflow-y: auto;"></div>
+            </div>
+
+            <div class="admin-header" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                <h3 style="font-size: 1rem; color: var(--primary-color);">إدارة التنويه العام في الموقع</h3>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" id="admin-announcement-input" class="form-control" placeholder="اكتب تنويه عام يظهر في أعلى الموقع للجميع..." lang="ar" dir="auto">
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-primary" style="padding: 8px; font-size: 0.9rem;" onclick="saveAnnouncement()">نشر التنويه العام</button>
+                    <button class="btn btn-danger" style="padding: 8px; font-size: 0.9rem; width: auto;" onclick="clearAnnouncement()">حذف التنويه العام</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="admin-search-input" class="form-control" placeholder="ابحث عن اسم مستخدم..." lang="ar" dir="auto" oninput="renderAdminUsers()">
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>المستخدم</th>
+                            <th>المدينة</th>
+                            <th>IP</th>
+                            <th>الحالة</th>
+                            <th>التوثيق</th>
+                            <th>الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- صفحة إدارة العضو الخاصة للآدمن -->
+    <div id="admin-single-user-page" class="page-container">
+        <div class="admin-container">
+            <div class="admin-header">
+                <button class="header-btn" onclick="loadAdminDashboard()">⬅️ عودة</button>
+                <h2 id="single-user-header-title" style="font-size: 1.1rem; color: var(--primary-color);">إدارة العضو</h2>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            </div>
+
+            <div class="profile-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div id="single-user-avatar" class="avatar" style="width: 48px; height: 48px; font-size: 1.1rem;"></div>
+                        <div>
+                            <h3 id="single-user-name-display" style="font-size: 1rem;"></h3>
+                            <div id="single-user-status-display" style="font-size: 0.8rem; color: var(--secondary-text);"></div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button id="single-user-verify-btn" class="btn-sm btn-primary" onclick="adminToggleVerification()"></button>
+                        <button class="btn-sm btn-success" onclick="adminOpenChatWithUser()">💬 مراسلة</button>
+                        <button class="btn-sm btn-danger" onclick="adminDeleteAccount()">🗑️ حذف</button>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: var(--danger-color);">تعليق أو تعطيل الحساب</h4>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <button class="btn-sm btn-warning" onclick="adminSuspendUser(1)">يوم</button>
+                        <button class="btn-sm btn-warning" onclick="adminSuspendUser(2)">يومين</button>
+                        <button class="btn-sm btn-warning" onclick="adminSuspendUser(7)">أسبوع</button>
+                        <button class="btn-sm btn-danger" onclick="adminSuspendUser('permanent')">دائم</button>
+                        <button class="btn-sm btn-success" onclick="adminActivateUser()">تفعيل</button>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px;">
+                    <h4 style="font-size: 0.9rem; margin-bottom: 6px; color: var(--primary-color);">تنويه خاص لهذا المستخدم</h4>
+                    <div class="form-group" style="margin-bottom: 6px;">
+                        <input type="text" id="single-user-private-announcement" class="form-control" placeholder="اكتب تنويه خاص..." lang="ar" dir="auto">
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-sm btn-primary" onclick="adminSendPrivateAnnouncement()">إرسال</button>
+                        <button class="btn-sm btn-danger" onclick="adminClearPrivateAnnouncement()">حذف</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--primary-color);">منشورات العضو</h3>
+                <div id="single-user-posts-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Imports and App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            collection, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            getDocs, 
+            deleteDoc, 
+            updateDoc, 
+            query, 
+            where 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyD1jTqkiQvTX1YfVyiA6bH1t9VfHevhKow",
+          authDomain: "banatjo2828.firebaseapp.com",
+          projectId: "banatjo2828",
+          storageBucket: "banatjo2828.firebasestorage.app",
+          messagingSenderId: "1051130291618",
+          appId: "1:1051130291618:web:537fcea9a403bc02d7befb",
+          measurementId: "G-KMYD6YBNJ6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        const ADMIN_SECRET = "@odayoday@";
+        let activeChatUser = null;
+        let managedUsername = null;
+        let viewedProfileUsername = null;
+        let tempPostImageBase64 = "";
+
+        let usersCache = null;
+        let usersCacheTime = 0;
+        const CACHE_DURATION = 300000;
+
+        async function getUsersMap(forceRefresh = false) {
+            const now = Date.now();
+            if (!usersCache) {
+                const localCache = localStorage.getItem('jb_users_map_cache');
+                if (localCache) {
+                    try { usersCache = JSON.parse(localCache); } catch(e){}
+                }
+            }
+            if (!forceRefresh && usersCache && (now - (usersCacheTime || 0) < CACHE_DURATION)) {
+                return usersCache;
+            }
+            try {
+                const usersSnap = await getDocs(collection(db, "users"));
+                let usersMap = {};
+                usersSnap.forEach(u => usersMap[u.data().username] = u.data());
+                usersCache = usersMap;
+                usersCacheTime = now;
+                localStorage.setItem('jb_users_map_cache', JSON.stringify(usersMap));
+                return usersMap;
+            } catch (e) {
+                return usersCache || {};
+            }
+        }
+
+        async function initStorage() {
+            await checkGlobalAnnouncementBanner();
+        }
+
+        async function checkGlobalAnnouncementBanner() {
+            const banner = document.getElementById('global-announcement-banner');
+            const textContent = document.getElementById('announcement-text-content');
+            try {
+                const docRef = doc(db, "settings", "announcement");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().text && docSnap.data().text.trim() !== "") {
+                    textContent.textContent = docSnap.data().text;
+                    banner.style.display = 'block';
+                } else {
+                    banner.style.display = 'none';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function checkPrivateAnnouncement(user) {
+            const banner = document.getElementById('private-announcement-banner');
+            const textContent = document.getElementById('private-announcement-text');
+            if (user && user.privateAnnouncement && user.privateAnnouncement.trim() !== "") {
+                textContent.textContent = user.privateAnnouncement;
+                banner.style.display = 'block';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        window.saveAnnouncement = async function() {
+            const input = document.getElementById('admin-announcement-input');
+            const val = input.value.trim();
+            if (!val) {
+                alert("الرجاء كتابة نص التنويه العام أولاً.");
+                return;
+            }
+            try {
+                await setDoc(doc(db, "settings", "announcement"), { text: val });
+                await checkGlobalAnnouncementBanner();
+                alert("تم نشر التنويه العام بنجاح!");
+            } catch (e) {
+                alert("حدث خطأ أثناء النشر.");
+            }
+        };
+
+        window.clearAnnouncement = async function() {
+            try {
+                await setDoc(doc(db, "settings", "announcement"), { text: "" });
+                const input = document.getElementById('admin-announcement-input');
+                if (input) input.value = "";
+                await checkGlobalAnnouncementBanner();
+                alert("تم حذف التنويه العام.");
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        function generateMockIp() {
+            return `46.185.${Math.floor(Math.random() * 200) + 1}.${Math.floor(Math.random() * 254) + 1}`;
+        }
+
+        // تفعيل دعم زر الرجوع في الهاتف/المتصفح
+        window.showPage = function(pageId, push = true) {
+            document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
+            if (push) {
+                history.pushState({ pageId: pageId }, "", "");
+            }
+        };
+
+        window.onpopstate = function(event) {
+            if (event.state && event.state.pageId) {
+                document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
+                const target = document.getElementById(event.state.pageId);
+                if (target) target.classList.add('active');
+            } else {
+                let currentUser = null;
+                try { currentUser = JSON.parse(localStorage.getItem('jb_current_user')); } catch(e){}
+                if (currentUser && currentUser.role === 'admin') {
+                    window.showPage('admin-page', false);
+                } else if (currentUser) {
+                    window.showPage('app-page', false);
+                } else {
+                    window.showPage('auth-page', false);
+                }
+            }
+        };
+
+        window.switchAuthMode = function(mode) {
+            document.getElementById('register-error').textContent = "";
+            document.getElementById('login-error').textContent = "";
+            if (mode === 'register') {
+                document.getElementById('login-form-box').style.display = 'none';
+                document.getElementById('register-form-box').style.display = 'block';
+            } else {
+                document.getElementById('register-form-box').style.display = 'none';
+                document.getElementById('login-form-box').style.display = 'block';
+            }
+        };
+
+        window.handleRegister = async function() {
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const errorEl = document.getElementById('register-error');
+
+            if (!username || !password) {
+                errorEl.textContent = "الرجاء تعبئة جميع الحقول.";
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, "users", username);
+                const userSnap = await getDoc(userDocRef);
+                if (userSnap.exists()) {
+                    errorEl.textContent = "الاسم مأخوذ من قبل";
+                    return;
+                }
+
+                await setDoc(userDocRef, {
+                    username: username,
+                    password: password,
+                    avatar: "",
+                    city: "عمان",
+                    verified: false,
+                    suspended: false,
+                    suspendedUntil: null,
+                    privateAnnouncement: "",
+                    friends: [],
+                    ip: generateMockIp()
+                });
+
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                alert("تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.");
+                window.switchAuthMode('login');
+            } catch (e) {
+                errorEl.textContent = "حدث خطأ في التسجيل.";
+            }
+        };
+
+        window.handleLogin = async function() {
+            const username = document.getElementById('login-username').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            if (!username || !password) {
+                errorEl.textContent = "الرجاء إدخال اسم المستخدم وكلمة المرور.";
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, "users", username);
+                const userSnap = await getDoc(userDocRef);
+
+                if (!userSnap.exists()) {
+                    errorEl.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة.";
+                    return;
+                }
+
+                let user = userSnap.data();
+                if (user.password !== password) {
+                    errorEl.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة.";
+                    return;
+                }
+
+                if (user.suspendedUntil && Date.now() > user.suspendedUntil) {
+                    user.suspended = false;
+                    user.suspendedUntil = null;
+                    await updateDoc(userDocRef, { suspended: false, suspendedUntil: null });
+                }
+
+                if (!user.ip) {
+                    user.ip = generateMockIp();
+                    await updateDoc(userDocRef, { ip: user.ip });
+                }
+
+                localStorage.setItem('jb_current_user', JSON.stringify(user));
+                window.loadUserApp();
+            } catch (e) {
+                errorEl.textContent = "حدث خطأ أثناء تسجيل الدخول.";
+            }
+        };
+
+        window.promptAdminLogin = function() {
+            const pass = prompt("أدخل كلمة سر الإدارة:");
+            if (pass === ADMIN_SECRET) {
+                localStorage.setItem('jb_current_user', JSON.stringify({ role: 'admin', username: 'admin' }));
+                window.loadAdminDashboard();
+            } else if (pass !== null) {
+                alert("كلمة السر غير صحيحة!");
+            }
+        };
+
+        window.updateNavContainers = function() {
+            const standardNav = `
+                <button class="header-btn" onclick="openMembersPage()">الأعضاء</button>
+                <button class="header-btn" onclick="openChatsList()">الدردشات</button>
+                <button class="header-btn" onclick="openProfilePage()">الملف</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+            const membersNav = `
+                <button class="header-btn" onclick="loadUserApp()">الرئيسية</button>
+                <button class="header-btn" onclick="openChatsList()">الدردشات</button>
+                <button class="header-btn" onclick="openProfilePage()">الملف</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+            const chatsNav = `
+                <button class="header-btn" onclick="loadUserApp()">الرئيسية</button>
+                <button class="header-btn" onclick="openMembersPage()">الأعضاء</button>
+                <button class="header-btn" onclick="openProfilePage()">الملف</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+            const chatNav = `
+                <button class="header-btn" onclick="loadUserApp()">الرئيسية</button>
+                <button class="header-btn" onclick="openChatsList()">الدردشات</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+            const profileNav = `
+                <button class="header-btn" onclick="loadUserApp()">الرئيسية</button>
+                <button class="header-btn" onclick="openMembersPage()">الأعضاء</button>
+                <button class="header-btn" onclick="openChatsList()">الدردشات</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+            const userProfileNav = `
+                <button class="header-btn" onclick="loadUserApp()">الرئيسية</button>
+                <button class="header-btn" onclick="openMembersPage()">الأعضاء</button>
+                <button class="header-btn" onclick="openChatsList()">الدردشات</button>
+                <button class="header-btn" onclick="openChat('admin')">🛡️ الإدارة</button>
+                <button class="header-btn" onclick="logout()">خروج</button>
+            `;
+
+            if (document.getElementById('user-nav-container')) document.getElementById('user-nav-container').innerHTML = standardNav;
+            if (document.getElementById('members-nav-container')) document.getElementById('members-nav-container').innerHTML = membersNav;
+            if (document.getElementById('chats-nav-container')) document.getElementById('chats-nav-container').innerHTML = chatsNav;
+            if (document.getElementById('chat-nav-container')) document.getElementById('chat-nav-container').innerHTML = chatNav;
+            if (document.getElementById('profile-nav-container')) document.getElementById('profile-nav-container').innerHTML = profileNav;
+            if (document.getElementById('user-profile-nav-container')) document.getElementById('user-profile-nav-container').innerHTML = userProfileNav;
+        };
+
+        window.loadUserApp = async function() {
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('jb_current_user')); } catch (e) { user = null; }
+
+            if (!user || user.role === 'admin') {
+                window.showPage('auth-page');
+                return;
+            }
+
+            try {
+                const userDocRef = doc(db, "users", user.username);
+                const userSnap = await getDoc(userDocRef);
+                if (!userSnap.exists()) { window.logout(); return; }
+                let freshUser = userSnap.data();
+
+                if (freshUser.suspendedUntil && Date.now() > freshUser.suspendedUntil) {
+                    freshUser.suspended = false;
+                    freshUser.suspendedUntil = null;
+                    await updateDoc(userDocRef, { suspended: false, suspendedUntil: null });
+                }
+
+                localStorage.setItem('jb_current_user', JSON.stringify(freshUser));
+                window.updateNavContainers();
+                await checkGlobalAnnouncementBanner();
+                checkPrivateAnnouncement(freshUser);
+
+                const notice = document.getElementById('suspension-notice');
+                const createCard = document.querySelector('.create-post-card');
+                if (freshUser.suspended) {
+                    if (notice) notice.style.display = 'block';
+                    if (createCard) createCard.style.display = 'none';
+                } else {
+                    if (notice) notice.style.display = 'none';
+                    if (createCard) createCard.style.display = 'block';
+                }
+
+                window.showPage('app-page');
+                await renderRandomPosts();
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.handlePostImageSelect = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempPostImageBase64 = e.target.result;
+                    document.getElementById('post-image-preview').src = tempPostImageBase64;
+                    document.getElementById('post-image-preview-container').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.clearPostImage = function() {
+            tempPostImageBase64 = "";
+            document.getElementById('post-image-preview').src = "";
+            document.getElementById('post-image-preview-container').style.display = 'none';
+            document.getElementById('post-media-input').value = "";
+        };
+
+        window.openProfilePage = async function() {
+            let user = JSON.parse(localStorage.getItem('jb_current_user')) || { username: 'مستخدم', city: 'عمان', avatar: '' };
+            document.getElementById('profile-city-select').value = user.city || "عمان";
+            const preview = document.getElementById('profile-avatar-preview');
+            if (user.avatar) preview.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+            else preview.textContent = (user && user.username) ? user.username.charAt(0).toUpperCase() : 'م';
+            
+            window.showPage('profile-page');
+            window.updateNavContainers();
+            await renderProfileUserPosts();
+        };
+
+        async function renderProfileUserPosts() {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: 'مستخدم' };
+            const container = document.getElementById('profile-user-posts-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const q = query(collection(db, "posts"), where("username", "==", currentUser.username));
+                const querySnapshot = await getDocs(q);
+                let userPosts = [];
+                querySnapshot.forEach(docSnap => {
+                    userPosts.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+
+                // ترتيب المنشورات من الأحدث إلى الأقدَم (الجديد فوق والقديم تحت)
+                userPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (userPosts.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; color: var(--secondary-text); padding: 8px;">ليس لديك أي منشورات.</p>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                userPosts.forEach(post => {
+                    const likesArray = Array.isArray(post.likes) ? post.likes : [];
+                    const likesCount = likesArray.length;
+                    const hasLiked = likesArray.includes(currentUser.username);
+                    let avatarHtml = currentUser.avatar ? `<img src="${currentUser.avatar}" alt="Avatar">` : ((currentUser && currentUser.username) ? currentUser.username.charAt(0).toUpperCase() : 'م');
+
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-user-info" onclick="openUserProfile('${post.username}')">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div>
+                                    <strong>@${post.username}</strong>
+                                    <div class="post-meta-text">${currentUser.city || 'عمان'} • ${post.date}</div>
+                                </div>
+                            </div>
+                            <button class="post-delete-btn" onclick="deleteMyPost('${post.firestoreId}')" title="حذف">🗑️</button>
+                        </div>
+                        <p class="post-body-text">${escapeHtml(post.content)}</p>
+                        ${post.image ? `<div class="post-image-container" style="display:block;"><img src="${post.image}" alt="Post image"></div>` : ''}
+                        <div class="post-stats-row">${likesCount} إعجابات</div>
+                        <div class="post-actions-row">
+                            <button class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike('${post.firestoreId}', this)">👍 إعجاب</button>
+                            <button class="action-btn" onclick="document.getElementById('comment-input-${post.firestoreId}').focus()">💬 تعليق</button>
+                        </div>
+                    `;
+                    fragment.appendChild(card);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.openUserProfile = async function(username) {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+            if (username === currentUser.username) {
+                window.openProfilePage();
+                return;
+            }
+
+            viewedProfileUsername = username;
+            window.showPage('user-profile-page');
+            window.updateNavContainers();
+
+            try {
+                const usersMap = await getUsersMap();
+                const targetUser = usersMap[username] || { username: username, city: 'عمان', avatar: '', verified: false };
+
+                const avatarEl = document.getElementById('view-user-avatar');
+                if (targetUser.avatar) avatarEl.innerHTML = `<img src="${targetUser.avatar}" alt="Avatar">`;
+                else avatarEl.textContent = username.charAt(0).toUpperCase();
+
+                document.getElementById('view-user-name').innerHTML = `${targetUser.verified ? '<span class="badge-verified">&#10004;</span>' : ''}@${username}`;
+                document.getElementById('view-user-meta').textContent = targetUser.city || 'عمان';
+
+                const friendBtn = document.getElementById('view-user-friend-btn');
+                const isFriend = currentUser.friends && currentUser.friends.includes(username);
+                friendBtn.textContent = isFriend ? 'إزالة صديق' : 'إضافة صديق';
+                friendBtn.className = isFriend ? 'btn-sm btn-danger' : 'btn-sm btn-success';
+
+                await renderUserPostsProfile(username, targetUser);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.toggleFriendFromProfile = async function() {
+            if (!viewedProfileUsername) return;
+            await window.toggleFriend(viewedProfileUsername);
+            await window.openUserProfile(viewedProfileUsername);
+        };
+
+        async function renderUserPostsProfile(username, targetUser) {
+            const container = document.getElementById('view-user-posts-container');
+            if (!container) return;
+            container.innerHTML = "";
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+
+            try {
+                const q = query(collection(db, "posts"), where("username", "==", username));
+                const querySnapshot = await getDocs(q);
+                let userPosts = [];
+                querySnapshot.forEach(docSnap => {
+                    userPosts.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+
+                // ترتيب المنشورات من الأحدث إلى الأقدَم (الجديد فوق والقديم تحت)
+                userPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (userPosts.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; color: var(--secondary-text); padding: 8px;">لا توجد منشورات لهذا المستخدم.</p>`;
+                    return;
+                }
+
+                let avatarHtml = targetUser.avatar ? `<img src="${targetUser.avatar}" alt="Avatar">` : username.charAt(0).toUpperCase();
+                const fragment = document.createDocumentFragment();
+
+                userPosts.forEach(post => {
+                    const likesArray = Array.isArray(post.likes) ? post.likes : [];
+                    const likesCount = likesArray.length;
+                    const hasLiked = likesArray.includes(currentUser.username);
+
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-user-info">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div>
+                                    <strong>@${post.username}</strong>
+                                    <div class="post-meta-text">${targetUser.city || 'عمان'} • ${post.date}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="post-body-text">${escapeHtml(post.content)}</p>
+                        ${post.image ? `<div class="post-image-container" style="display:block;"><img src="${post.image}" alt="Post image"></div>` : ''}
+                        <div class="post-stats-row">${likesCount} إعجابات</div>
+                        <div class="post-actions-row">
+                            <button class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike('${post.firestoreId}', this)">👍 إعجاب</button>
+                            <button class="action-btn" onclick="document.getElementById('comment-input-${post.firestoreId}').focus()">💬 تعليق</button>
+                        </div>
+                    `;
+                    fragment.appendChild(card);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // تم إصلاح دالة الحذف لتحديث الواجهة بناءً على الصفحة النشطة حالياً
+        window.deleteMyPost = async function(firestoreId) {
+            if (!confirm("هل أنت متأكد من حذف هذا المنشور؟")) return;
+            try {
+                await deleteDoc(doc(db, "posts", firestoreId));
+                
+                const appPage = document.getElementById('app-page');
+                if (appPage && appPage.classList.contains('active')) {
+                    await renderRandomPosts();
+                }
+                const profilePage = document.getElementById('profile-page');
+                if (profilePage && profilePage.classList.contains('active')) {
+                    await renderProfileUserPosts();
+                }
+            } catch (e) {
+                alert("حدث خطأ أثناء الحذف.");
+            }
+        };
+
+        window.saveProfile = async function() {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            const city = document.getElementById('profile-city-select').value;
+            const fileInput = document.getElementById('profile-img-input');
+
+            const updateData = async (avatarBase64) => {
+                if (avatarBase64 !== undefined) currentUser.avatar = avatarBase64;
+                currentUser.city = city;
+
+                try {
+                    const userDocRef = doc(db, "users", currentUser.username);
+                    await updateDoc(userDocRef, {
+                        city: currentUser.city,
+                        avatar: currentUser.avatar || ""
+                    });
+                    usersCache = null;
+                    localStorage.removeItem('jb_users_map_cache');
+                    localStorage.setItem('jb_current_user', JSON.stringify(currentUser));
+                    alert("تم تحديث الملف الشخصي بنجاح!");
+                    window.loadUserApp();
+                } catch (e) {
+                    alert("حدث خطأ أثناء الحفظ.");
+                }
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = async e => await updateData(e.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                await updateData();
+            }
+        };
+
+        window.openMembersPage = async function() {
+            window.showPage('members-page');
+            window.updateNavContainers();
+            await renderMembersList();
+        };
+
+        window.renderMembersList = async function() {
+            const queryText = document.getElementById('members-search-input').value.trim().toLowerCase();
+            const currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+            const container = document.getElementById('members-list-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const usersMap = await getUsersMap();
+                let users = Object.values(usersMap);
+
+                const filtered = users.filter(u => u.username !== currentUser.username && u.username.toLowerCase().includes(queryText));
+                if (filtered.length === 0) {
+                    container.innerHTML = `<div class="member-card" style="text-align: center; color: var(--secondary-text);">لا توجد أعضاء مطابقة.</div>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                filtered.forEach(member => {
+                    const isFriend = currentUser.friends && currentUser.friends.includes(member.username);
+                    let avatarHtml = member.avatar ? `<img src="${member.avatar}" alt="Avatar">` : ((member && member.username) ? member.username.charAt(0).toUpperCase() : 'م');
+
+                    const card = document.createElement('div');
+                    card.className = 'member-card';
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="openUserProfile('${member.username}')">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div>
+                                    <strong>${member.verified ? '<span class="badge-verified">&#10004;</span>' : ''}@${member.username}</strong>
+                                    <div style="font-size: 0.75rem; color: var(--secondary-text);">${member.city || 'عمان'}</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn-sm ${isFriend ? 'btn-danger' : 'btn-success'}" onclick="toggleFriend('${member.username}')">${isFriend ? 'إزالة' : 'صديق'}</button>
+                                <button class="btn-sm btn-primary" onclick="openChat('${member.username}')">مراسلة</button>
+                            </div>
+                        </div>
+                    `;
+                    fragment.appendChild(card);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.toggleFriend = async function(username) {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            if (!currentUser.friends) currentUser.friends = [];
+            const index = currentUser.friends.indexOf(username);
+            if (index > -1) currentUser.friends.splice(index, 1);
+            else currentUser.friends.push(username);
+
+            try {
+                const userDocRef = doc(db, "users", currentUser.username);
+                await updateDoc(userDocRef, { friends: currentUser.friends });
+                localStorage.setItem('jb_current_user', JSON.stringify(currentUser));
+                await renderMembersList();
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.openChatsList = async function() {
+            window.showPage('chats-page');
+            window.updateNavContainers();
+            await renderChatsList();
+        };
+
+        window.renderChatsList = async function() {
+            const queryText = document.getElementById('chats-search-input') ? document.getElementById('chats-search-input').value.trim().toLowerCase() : "";
+            const currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+            const container = document.getElementById('chats-list-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const usersMap = await getUsersMap();
+                let users = Object.values(usersMap).filter(u => u.username !== currentUser.username);
+
+                if (queryText) {
+                    users = users.filter(u => u.username.toLowerCase().includes(queryText));
+                }
+
+                if (users.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--secondary-text); padding: 8px;">لا توجد أعضاء متاحة للدردشة.</div>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                users.forEach(user => {
+                    let avatarHtml = user.avatar ? `<img src="${user.avatar}" alt="Avatar">` : ((user && user.username) ? user.username.charAt(0).toUpperCase() : 'م');
+                    const card = document.createElement('div');
+                    card.className = 'member-card';
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="openUserProfile('${user.username}')">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div>
+                                    <strong>${user.verified ? '<span class="badge-verified">&#10004;</span>' : ''}@${user.username}</strong>
+                                    <div style="font-size: 0.75rem; color: var(--secondary-text);">${user.city || 'عمان'}</div>
+                                </div>
+                            </div>
+                            <button class="btn-sm btn-primary" onclick="openChat('${user.username}')">دردشة 💬</button>
+                        </div>
+                    `;
+                    fragment.appendChild(card);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.openChat = async function(username) {
+            activeChatUser = username;
+            const title = username === 'admin' ? 'مراسلة الإدارة العامة' : `مراسلة: @${username}`;
+            document.getElementById('chat-with-title').textContent = title;
+            window.showPage('chat-page');
+            window.updateNavContainers();
+            await renderChatMessages();
+        };
+
+        window.sendChatMessage = async function() {
+            const inputEl = document.getElementById('chat-input-text');
+            const text = inputEl.value.trim();
+            if (!text || !activeChatUser) return;
+
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            const senderName = (currentUser && currentUser.role === 'admin') ? 'admin' : currentUser.username;
+
+            try {
+                await setDoc(doc(collection(db, "messages")), {
+                    sender: senderName,
+                    receiver: activeChatUser,
+                    text: text,
+                    date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    timestamp: Date.now()
+                });
+                inputEl.value = "";
+                await renderChatMessages();
+            } catch (e) {
+                alert("تعذر إرسال الرسالة.");
+            }
+        };
+
+        async function renderChatMessages() {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+            const myName = currentUser.role === 'admin' ? 'admin' : currentUser.username;
+            const container = document.getElementById('chat-messages-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "messages"));
+                let messages = [];
+                querySnapshot.forEach(docSnap => {
+                    messages.push(docSnap.data());
+                });
+                messages.sort((a, b) => a.timestamp - b.timestamp);
+
+                const conversation = messages.filter(m => 
+                    (m.sender === myName && m.receiver === activeChatUser) ||
+                    (m.sender === activeChatUser && m.receiver === myName)
+                );
+
+                if (conversation.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--secondary-text); margin: auto;">لا توجد رسائل سابقة. ابدأ المحادثة الآن!</div>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                conversation.forEach(msg => {
+                    const isMe = msg.sender === myName;
+                    const div = document.createElement('div');
+                    div.className = `chat-message ${isMe ? 'sent' : 'received'}`;
+                    div.innerHTML = `<div>${escapeHtml(msg.text)}</div><div style="font-size: 0.6rem; opacity: 0.8; text-align: left; margin-top: 2px;">${msg.date}</div>`;
+                    fragment.appendChild(div);
+                });
+                container.appendChild(fragment);
+                container.scrollTop = container.scrollHeight;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.createPost = async function() {
+            const inputEl = document.getElementById('post-content-input');
+            if (!inputEl) return;
+            const content = inputEl.value.trim();
+            if (!content && !tempPostImageBase64) return;
+
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            if (!currentUser || currentUser.suspended) return;
+
+            try {
+                await setDoc(doc(collection(db, "posts")), {
+                    username: currentUser.username,
+                    content: content,
+                    image: tempPostImageBase64 || "",
+                    date: new Date().toLocaleString(),
+                    timestamp: Date.now(),
+                    likes: [],
+                    comments: []
+                });
+                inputEl.value = "";
+                clearPostImage();
+                await renderRandomPosts();
+            } catch (e) {
+                alert("حدث خطأ أثناء النشر.");
+            }
+        };
+
+        window.toggleLike = async function(firestoreId, btnElement) {
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            if (!currentUser) return;
+
+            const postCard = btnElement.closest('.post-card');
+            const statsRow = postCard.querySelector('.post-stats-row');
+
+            try {
+                const postRef = doc(db, "posts", firestoreId);
+                const postSnap = await getDoc(postRef);
+                if (!postSnap.exists()) return;
+                let post = postSnap.data();
+                
+                let likesArray = Array.isArray(post.likes) ? [...post.likes] : [];
+
+                const index = likesArray.indexOf(currentUser.username);
+                let hasLiked = false;
+                if (index > -1) {
+                    likesArray.splice(index, 1);
+                    hasLiked = false;
+                } else {
+                    likesArray.push(currentUser.username);
+                    hasLiked = true;
+                }
+
+                if (hasLiked) {
+                    btnElement.classList.add('liked');
+                } else {
+                    btnElement.classList.remove('liked');
+                }
+                statsRow.textContent = `${likesArray.length} إعجابات`;
+
+                await updateDoc(postRef, { likes: likesArray });
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.addComment = async function(firestoreId) {
+            const inputEl = document.getElementById(`comment-input-${firestoreId}`);
+            if (!inputEl) return;
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user'));
+            try {
+                const postRef = doc(db, "posts", firestoreId);
+                const postSnap = await getDoc(postRef);
+                if (!postSnap.exists()) return;
+                let post = postSnap.data();
+                let commentsArray = Array.isArray(post.comments) ? [...post.comments] : [];
+
+                commentsArray.push({
+                    username: currentUser.username,
+                    text: text,
+                    date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                });
+
+                await updateDoc(postRef, { comments: commentsArray });
+                await renderRandomPosts();
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        async function renderRandomPosts() {
+            const feedContainer = document.getElementById('posts-feed');
+            if (!feedContainer) return;
+            feedContainer.innerHTML = "";
+
+            let currentUser = JSON.parse(localStorage.getItem('jb_current_user')) || { username: '' };
+
+            try {
+                const usersMap = await getUsersMap();
+                const postsSnap = await getDocs(collection(db, "posts"));
+                let posts = [];
+                postsSnap.forEach(docSnap => {
+                    posts.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+
+                // ترتيب المنشورات من الأحدث إلى الأقدَم (الجديد فوق والقديم تحت)
+                posts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (posts.length === 0) {
+                    feedContainer.innerHTML = `<div class="post-card" style="text-align: center; color: var(--secondary-text);">لا توجد منشورات حتى الآن.</div>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+
+                posts.forEach(post => {
+                    const postUser = usersMap[post.username] || { username: post.username, city: 'عمان', avatar: '' };
+                    const isVerified = postUser.verified;
+                    
+                    const likesArray = Array.isArray(post.likes) ? post.likes : [];
+                    const likesCount = likesArray.length;
+                    const hasLiked = likesArray.includes(currentUser.username);
+                    const isMyPost = post.username === currentUser.username;
+
+                    let avatarHtml = postUser.avatar ? `<img src="${postUser.avatar}" alt="Avatar">` : ((post && post.username) ? post.username.charAt(0).toUpperCase() : 'م');
+
+                    let commentsHtml = '';
+                    if (Array.isArray(post.comments) && post.comments.length > 0) {
+                        post.comments.forEach(c => {
+                            commentsHtml += `<div class="comment-item"><strong>@${c.username}:</strong> ${escapeHtml(c.text)}</div>`;
+                        });
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'post-card';
+                    card.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-user-info" onclick="openUserProfile('${post.username}')">
+                                <div class="avatar">${avatarHtml}</div>
+                                <div>
+                                    <strong>${isVerified ? '<span class="badge-verified">&#10004;</span>' : ''}@${post.username}</strong>
+                                    <div class="post-meta-text">${postUser.city || 'عمان'} • ${post.date}</div>
+                                </div>
+                            </div>
+                            ${isMyPost ? `<button class="post-delete-btn" onclick="deleteMyPost('${post.firestoreId}')" title="حذف">🗑️</button>` : ''}
+                        </div>
+                        <p class="post-body-text">${escapeHtml(post.content)}</p>
+                        ${post.image ? `<div class="post-image-container" style="display:block;"><img src="${post.image}" alt="Post image"></div>` : ''}
+                        <div class="post-stats-row">${likesCount} إعجابات</div>
+                        <div class="post-actions-row">
+                            <button class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike('${post.firestoreId}', this)">👍 إعجاب</button>
+                            <button class="action-btn" onclick="document.getElementById('comment-input-${post.firestoreId}').focus()">💬 تعليق</button>
+                        </div>
+                        <div class="comments-section">
+                            <div id="comments-list-${post.firestoreId}">${commentsHtml}</div>
+                            <div class="comment-input-box">
+                                <input type="text" id="comment-input-${post.firestoreId}" placeholder="اكتب تعليقاً..." lang="ar" dir="auto" onkeypress="if(event.key === 'Enter') addComment('${post.firestoreId}')">
+                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="addComment('${post.firestoreId}')">إرسال</button>
+                            </div>
+                        </div>
+                    `;
+                    fragment.appendChild(card);
+                });
+                feedContainer.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.loadAdminDashboard = async function() {
+            window.showPage('admin-page');
+            await renderAdminUsers();
+            await renderAdminMessagesInbox();
+            try {
+                const docRef = doc(db, "settings", "announcement");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().text) {
+                    document.getElementById('admin-announcement-input').value = docSnap.data().text;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        // صندوق رسائل الأعضاء في لوحة الإدارة
+        async function renderAdminMessagesInbox() {
+            const container = document.getElementById('admin-messages-inbox-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const querySnapshot = await getDocs(collection(db, "messages"));
+                let messages = [];
+                querySnapshot.forEach(docSnap => {
+                    messages.push(docSnap.data());
+                });
+
+                let adminMsgs = messages.filter(m => m.receiver === 'admin');
+                if (adminMsgs.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--secondary-text); padding: 8px;">لا توجد رسائل من الأعضاء حالياً.</div>`;
+                    return;
+                }
+
+                let sendersMap = {};
+                adminMsgs.forEach(m => {
+                    if (!sendersMap[m.sender] || m.timestamp > sendersMap[m.sender].timestamp) {
+                        sendersMap[m.sender] = m;
+                    }
+                });
+
+                let sendersList = Object.values(sendersMap);
+                sendersList.sort((a, b) => b.timestamp - a.timestamp);
+
+                const fragment = document.createDocumentFragment();
+                sendersList.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);";
+                    div.innerHTML = `
+                        <div>
+                            <strong>@${msg.sender}</strong>
+                            <div style="font-size: 0.85rem; color: var(--text-color); margin-top: 2px; direction: auto;">${escapeHtml(msg.text)}</div>
+                            <div style="font-size: 0.7rem; color: var(--secondary-text); margin-top: 2px;">${msg.date}</div>
+                        </div>
+                        <button class="btn-sm btn-primary" onclick="adminOpenChatWithUserCustom('${msg.sender}')">💬 رد</button>
+                    `;
+                    fragment.appendChild(div);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.adminOpenChatWithUserCustom = function(username) {
+            activeChatUser = username;
+            document.getElementById('chat-with-title').textContent = `مراسلة كإدارة: @${username}`;
+            localStorage.setItem('jb_current_user', JSON.stringify({ role: 'admin', username: 'admin' }));
+            window.showPage('chat-page');
+            renderChatMessages();
+        };
+
+        window.renderAdminUsers = async function() {
+            const queryText = document.getElementById('admin-search-input').value.trim().toLowerCase();
+            const tbody = document.getElementById('admin-users-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = "";
+
+            try {
+                const usersMap = await getUsersMap();
+                let users = Object.values(usersMap);
+
+                const filteredUsers = users.filter(u => u.username.toLowerCase().includes(queryText));
+                if (filteredUsers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center;">لايوجد أعضاء مطابقين للبحث.</td></tr>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                filteredUsers.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>@${user.username}</td>
+                        <td>${user.city || 'عمان'}</td>
+                        <td><code style="background:#f1f5f9; padding:3px 6px; border-radius:4px; font-size:0.8rem; color:#ef4444;">${user.ip || '192.168.1.10'}</code></td>
+                        <td>${user.suspended ? '<span style="color:var(--danger-color); font-weight:bold;">معلق</span>' : '<span style="color:var(--success-color)">نشط</span>'}</td>
+                        <td>${user.verified ? '<span style="color:var(--primary-color); font-weight:bold;">موثق &#10004;</span>' : 'غير موثق'}</td>
+                        <td class="actions-cell">
+                            <button class="btn-sm btn-primary" onclick="openAdminSingleUser('${user.username}')">⚙️ إدارة</button>
+                        </td>
+                    `;
+                    fragment.appendChild(tr);
+                });
+                tbody.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.openAdminSingleUser = async function(username) {
+            managedUsername = username;
+            try {
+                const userSnap = await getDoc(doc(db, "users", username));
+                if (!userSnap.exists()) return;
+                let user = userSnap.data();
+
+                document.getElementById('single-user-header-title').textContent = `@${user.username}`;
+                document.getElementById('single-user-name-display').textContent = `@${user.username}`;
+                document.getElementById('single-user-status-display').textContent = `${user.city || 'عمان'} | ${user.suspended ? 'معلق' : 'نشط'}`;
+                
+                const avatarDiv = document.getElementById('single-user-avatar');
+                if (user.avatar) avatarDiv.innerHTML = `<img src="${user.avatar}" alt="Avatar">`;
+                else avatarDiv.textContent = (user && user.username) ? user.username.charAt(0).toUpperCase() : 'م';
+
+                const verifyBtn = document.getElementById('single-user-verify-btn');
+                verifyBtn.textContent = user.verified ? 'إلغاء التوثيق' : 'توثيق';
+
+                document.getElementById('single-user-private-announcement').value = user.privateAnnouncement || "";
+
+                await renderAdminSingleUserPosts();
+                window.showPage('admin-single-user-page');
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.adminToggleVerification = async function() {
+            try {
+                const userRef = doc(db, "users", managedUsername);
+                const userSnap = await getDoc(userRef);
+                if (!userSnap.exists()) return;
+                const newVerifiedState = !userSnap.data().verified;
+                await updateDoc(userRef, { verified: newVerifiedState });
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                await window.openAdminSingleUser(managedUsername);
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.adminSuspendUser = async function(duration) {
+            let suspendUntilTime = null;
+            if (duration === 1) suspendUntilTime = Date.now() + (24 * 60 * 60 * 1000);
+            else if (duration === 2) suspendUntilTime = Date.now() + (2 * 24 * 60 * 60 * 1000);
+            else if (duration === 7) suspendUntilTime = Date.now() + (7 * 24 * 60 * 60 * 1000);
+            else if (duration === 'permanent') suspendUntilTime = null;
+
+            try {
+                await updateDoc(doc(db, "users", managedUsername), {
+                    suspended: true,
+                    suspendedUntil: suspendUntilTime
+                });
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                alert("تم تعليق الحساب بنجاح!");
+                await window.openAdminSingleUser(managedUsername);
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.adminActivateUser = async function() {
+            try {
+                await updateDoc(doc(db, "users", managedUsername), {
+                    suspended: false,
+                    suspendedUntil: null
+                });
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                alert("تم تفعيل الحساب وإلغاء التعليق.");
+                await window.openAdminSingleUser(managedUsername);
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.adminDeleteAccount = async function() {
+            if (!confirm(`هل أنت متأكد من حذف حساب @${managedUsername} نهائياً؟`)) return;
+            try {
+                await deleteDoc(doc(db, "users", managedUsername));
+
+                const postsSnap = await getDocs(query(collection(db, "posts"), where("username", "==", managedUsername)));
+                for (let postDoc of postsSnap.docs) {
+                    await deleteDoc(doc(db, "posts", postDoc.id));
+                }
+
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                alert("تم حذف الحساب بنجاح.");
+                window.loadAdminDashboard();
+            } catch (e) {
+                alert("حدث خطأ أثناء الحذف.");
+            }
+        };
+
+        window.adminSendPrivateAnnouncement = async function() {
+            const text = document.getElementById('single-user-private-announcement').value.trim();
+            if (!text) {
+                alert("الرجاء كتابة التنويه الخاص.");
+                return;
+            }
+            try {
+                await updateDoc(doc(db, "users", managedUsername), { privateAnnouncement: text });
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                alert("تم إرسال التنويه الخاص بنجاح!");
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.adminClearPrivateAnnouncement = async function() {
+            try {
+                await updateDoc(doc(db, "users", managedUsername), { privateAnnouncement: "" });
+                usersCache = null;
+                localStorage.removeItem('jb_users_map_cache');
+                document.getElementById('single-user-private-announcement').value = "";
+                alert("تم حذف التنويه الخاص.");
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.adminOpenChatWithUser = function() {
+            activeChatUser = managedUsername;
+            document.getElementById('chat-with-title').textContent = `مراسلة كإدارة: @${managedUsername}`;
+            localStorage.setItem('jb_current_user', JSON.stringify({ role: 'admin', username: 'admin' }));
+            window.showPage('chat-page');
+            renderChatMessages();
+        };
+
+        async function renderAdminSingleUserPosts() {
+            const container = document.getElementById('single-user-posts-container');
+            if (!container) return;
+            container.innerHTML = "";
+
+            try {
+                const q = query(collection(db, "posts"), where("username", "==", managedUsername));
+                const querySnapshot = await getDocs(q);
+                let userPosts = [];
+                querySnapshot.forEach(docSnap => {
+                    userPosts.push({ firestoreId: docSnap.id, ...docSnap.data() });
+                });
+
+                // ترتيب المنشورات من الأحدث إلى الأقدَم (الجديد فوق والقديم تحت)
+                userPosts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (userPosts.length === 0) {
+                    container.innerHTML = `<p style="text-align: center; color: var(--secondary-text);">لا توجد منشورات لهذا العضو.</p>`;
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                userPosts.forEach(post => {
+                    const div = document.createElement('div');
+                    div.style.cssText = "background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color);";
+                    div.innerHTML = `
+                        <div>
+                            <div style="font-size:0.7rem; color:var(--secondary-text);">${post.date}</div>
+                            <p style="margin-top:2px; font-size: 0.9rem; direction: auto;">${escapeHtml(post.content)}</p>
+                        </div>
+                        <button class="btn-sm btn-danger" onclick="adminDeletePost('${post.firestoreId}')">إزالة</button>
+                    `;
+                    fragment.appendChild(div);
+                });
+                container.appendChild(fragment);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        window.adminDeletePost = async function(firestoreId) {
+            if (!confirm("هل تريد إزالة هذا المنشور؟")) return;
+            try {
+                await deleteDoc(doc(db, "posts", firestoreId));
+                await renderAdminSingleUserPosts();
+            } catch (e) {
+                alert("حدث خطأ.");
+            }
+        };
+
+        window.logout = function() {
+            localStorage.removeItem('jb_current_user');
+            window.showPage('auth-page');
+        };
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        window.onload = async function() {
+            await initStorage();
+            try {
+                const currentUserStr = localStorage.getItem('jb_current_user');
+                let currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
+                if (currentUser) {
+                    if (currentUser.role === 'admin') window.loadAdminDashboard();
+                    else await window.loadUserApp();
+                } else {
+                    window.showPage('auth-page');
+                }
+            } catch (e) {
+                localStorage.clear();
+                await initStorage();
+                window.showPage('auth-page');
+            }
+        };
+    </script>
+</body>
+</html>
